@@ -7,23 +7,23 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 )
 
 const apiKey = "YOUR API_KEY"
 const searchURL = "https://translation.googleapis.com/language/translate/v2"
+
 var targetLang string
 
 type TransResp struct {
 	Data struct {
-		Translations []Translation	`json:"Translations"`
+		Translations []Translation `json:"Translations"`
 	}
 }
 
 type Translation struct {
-	TranslatedText string	`json:"translatedText"`
-	DetectedLang string	`json:"detectedSourceLanguage"`
+	TranslatedText string `json:"translatedText"`
+	DetectedLang   string `json:"detectedSourceLanguage"`
 }
 
 func getValues(args []string) url.Values {
@@ -57,13 +57,28 @@ func display(ts TransResp) {
 	}
 }
 
+const usage = `
+Usage:
+	Enter the target language code and the search words.
+
+Example:
+	ja where are you from?
+
+Language Code:
+	English : en
+	Japanese: ja
+	French  : fr
+
+	Show more
+		https://cloud.google.com/translate/docs/languages
+`
+
 func main() {
-	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr,
-			`Usage: Enter the target language code and the search words
-        [Example] ja wehre are you from?`)
-	}
 	flag.Parse()
+	if len(flag.Args()) == 0 {
+		fmt.Println(usage)
+		return
+	}
 
 	targetLang = flag.Args()[0]
 	values := getValues(flag.Args())
